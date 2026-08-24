@@ -50,6 +50,7 @@ export async function configureApp(app: INestApplication): Promise<ConfigService
     .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, swaggerDocument, {
+    jsonDocumentUrl: 'api/docs-json',
     swaggerOptions: { persistAuthorization: true },
   });
 
