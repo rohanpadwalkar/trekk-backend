@@ -1,13 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
-import { ValidationPipe, Logger } from '@nestjs/common';
-import helmet from 'helmet';
+import { Logger } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 import Redis from 'ioredis';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import { configureApp } from './create-app';
 
 /**
  * Socket.IO adapter backed by Redis pub/sub, so real-time chat delivery
@@ -40,48 +37,8 @@ class RedisIoAdapter extends IoAdapter {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const config = app.get(ConfigService);
+  const config = await configureApp(app);
   const logger = new Logger('Bootstrap');
-
-  app.use(helmet());
-
-  const corsOrigin = config.get<string[]>('corsOrigin') ?? [];
-  app.enableCors({
-    origin: corsOrigin.length > 0 ? corsOrigin : true,
-    credentials: true,
-  });
-
-  app.setGlobalPrefix('api/v1');
-
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      transformOptions: { enableImplicitConversion: true },
-    }),
-  );
-
-  app.useGlobalFilters(new AllExceptionsFilter());
-
-  // Swagger/OpenAPI docs. Deliberately mounted OUTSIDE the /api/v1 prefix
-  // (setGlobalPrefix only applies to controller routes, not this), at the
-  // path requested: /api/docs. SwaggerModule.setup() adds plain Express
-  // routes to the same http.Server the rest of the app already uses, so it
-  // works unchanged as part of the single Vercel Function this app deploys
-  // as — no separate static-generation step needed.
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Trekk Together API')
-    .setDescription(
-      'Trekk Together backend. Auth: paste an access token from /auth/login or /auth/signup into the Authorize button below (Bearer scheme). Endpoints marked @Public() in source need no token.',
-    )
-    .setVersion('1.0')
-    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token')
-    .build();
-  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('api/docs', app, swaggerDocument, {
-    swaggerOptions: { persistAuthorization: true },
-  });
 
   const redisUrl = config.get<string>('redisUrl')!;
   const redisIoAdapter = new RedisIoAdapter(app, redisUrl);
