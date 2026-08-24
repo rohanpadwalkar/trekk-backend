@@ -1,0 +1,21 @@
+version: "3.9"
+
+# Production-shaped: just the backend container, configured entirely via
+# .env to point at your external MongoDB, Redis, and Supabase Storage.
+# This is the same shape Render (or any other host) builds from the
+# Dockerfile — running `docker compose up --build` here is a way to test
+# the exact production config locally before deploying.
+#
+# Want a fully offline dev loop instead (local Mongo/Redis/MinIO, no
+# external accounts needed)? See docker-compose.local.yml.
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trekk-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
