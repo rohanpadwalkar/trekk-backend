@@ -10,6 +10,10 @@ export class FollowEdge {
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   followingId: Types.ObjectId;
+
+  // See User.isDemo — same purpose, set by scripts/seed-demo-sahyadri.ts.
+  @Prop({ default: false, index: true })
+  isDemo: boolean;
 }
 
 export const FollowEdgeSchema = SchemaFactory.createForClass(FollowEdge);

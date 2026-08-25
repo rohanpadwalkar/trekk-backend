@@ -8,7 +8,7 @@ import { RedisThrottlerStorage } from '../src/redis/throttler-storage.redis';
 async function main() {
   const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379';
 
-  const redis = new RedisService(redisUrl);
+  const redis = new RedisService({ redisUrl });
   await redis.set('smoke:key', { hello: 'world' }, 5);
   const value = await redis.get<{ hello: string }>('smoke:key');
   console.assert(value?.hello === 'world', 'RedisService.get/set roundtrip failed');
@@ -22,7 +22,7 @@ async function main() {
   console.assert(afterA === null && afterB === null, 'delByPrefix failed to clear keys');
   console.log('RedisService.delByPrefix OK');
 
-  const storage = new RedisThrottlerStorage(redisUrl);
+  const storage = new RedisThrottlerStorage({ redisUrl });
   const throttlerName = `smoke-${Date.now()}`;
   let lastRecord;
   for (let i = 0; i < 5; i++) {

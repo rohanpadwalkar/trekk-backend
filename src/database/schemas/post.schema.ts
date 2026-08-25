@@ -23,6 +23,10 @@ export class Post {
 
   @Prop({ default: 0 })
   likeCount: number;
+
+  // See User.isDemo — same purpose, set by scripts/seed-demo-sahyadri.ts.
+  @Prop({ default: false, index: true })
+  isDemo: boolean;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

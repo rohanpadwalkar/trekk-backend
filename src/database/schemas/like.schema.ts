@@ -10,6 +10,10 @@ export class Like {
 
   @Prop({ type: Types.ObjectId, ref: 'Post', required: true })
   postId: Types.ObjectId;
+
+  // See User.isDemo — same purpose, set by scripts/seed-demo-sahyadri.ts.
+  @Prop({ default: false, index: true })
+  isDemo: boolean;
 }
 
 export const LikeSchema = SchemaFactory.createForClass(Like);

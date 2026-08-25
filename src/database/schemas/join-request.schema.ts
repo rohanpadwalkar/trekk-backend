@@ -23,6 +23,10 @@ export class JoinRequest {
 
   @Prop({ type: Date, default: null })
   respondedAt: Date | null;
+
+  // See User.isDemo — same purpose, set by scripts/seed-demo-sahyadri.ts.
+  @Prop({ default: false, index: true })
+  isDemo: boolean;
 }
 
 export const JoinRequestSchema = SchemaFactory.createForClass(JoinRequest);

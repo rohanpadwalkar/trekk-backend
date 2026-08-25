@@ -84,6 +84,10 @@ export class Trek {
   // Auto-derived to 'closed' when seatsLeft hits 0 (see TreksService).
   @Prop({ enum: ['upcoming', 'ongoing', 'past', 'closed'], default: 'upcoming', index: true })
   status: TrekStatus;
+
+  // See User.isDemo — same purpose, set by scripts/seed-demo-sahyadri.ts.
+  @Prop({ default: false, index: true })
+  isDemo: boolean;
 }
 
 export const TrekSchema = SchemaFactory.createForClass(Trek);

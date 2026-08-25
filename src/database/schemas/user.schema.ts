@@ -102,6 +102,12 @@ export class User {
   // exposed by any endpoint yet, intentionally out of scope this phase.
   @Prop({ type: EmergencyContact, default: null })
   emergencyContact: EmergencyContact | null;
+
+  // Set by scripts/seed-demo-sahyadri.ts. Lets demo/launch-content data be
+  // identified and wiped in bulk (db.<collection>.deleteMany({ isDemo: true }))
+  // without touching real accounts — never set true by any app code path.
+  @Prop({ default: false, index: true })
+  isDemo: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
